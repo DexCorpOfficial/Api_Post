@@ -14,9 +14,12 @@ namespace Api_Post.Data
         public DbSet<Post_Feed> Post_Feed { get; set; }
         public DbSet<Post_Evento> PostEvento { get; set; }
         public DbSet<Post_Banda> PostBanda { get; set; }
-        public DbSet<Cuenta> cuenta { get; set; }
+        public DbSet<Cuenta> Cuenta { get; set; }
         public DbSet<Evento> Eventos { get; set; }
         public DbSet<Banda> Bandas { get; set; }
+
+        // Agregar el DbSet para la nueva clase 'Likea'
+        public DbSet<Likea> Likea { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -92,6 +95,25 @@ namespace Api_Post.Data
                 entity.HasOne(pb => pb.Banda)
                     .WithMany()
                     .HasForeignKey(pb => pb.IDdeBanda)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configuración de la entidad 'Likea'
+            modelBuilder.Entity<Likea>(entity =>
+            {
+                // Clave primaria compuesta
+                entity.HasKey(l => new { l.IDdePost, l.IDdeCuenta });
+
+                // Relación con 'Post'
+                entity.HasOne(l => l.Post)
+                    .WithMany() // No hay propiedad de navegación en 'Post' para Likea
+                    .HasForeignKey(l => l.IDdePost)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación con 'Cuenta'
+                entity.HasOne(l => l.Cuenta)
+                    .WithMany() // No hay propiedad de navegación en 'Cuenta' para Likea
+                    .HasForeignKey(l => l.IDdeCuenta)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }

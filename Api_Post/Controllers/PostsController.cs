@@ -91,11 +91,11 @@ namespace Api_Post.Controllers
         }
 
 
-        [HttpGet("GetPost_FeedsByCuenta/{idCuenta}")]
-        public async Task<IActionResult> GetPost_FeedsByCuenta(int idCuenta)
+        [HttpGet("GetPost_FeedsByPost/{idPost}")]
+        public async Task<IActionResult> GetPost_FeedsByPost(int idPost)
         {
             var postFeeds = await _context.Post_Feed
-                .Where(pf => pf.IDdeCuenta == idCuenta)  // Filtrar por la cuenta
+                .Where(pf => pf.IDdePost == idPost)  // Filtrar por el post
                 .Include(pf => pf.Post)                  // Incluir la relación con 'Post'
                 .Select(pf => new {
                     pf.IDdePost,
@@ -105,7 +105,8 @@ namespace Api_Post.Controllers
                         pf.Post.ID,
                         pf.Post.Descripcion,
                         pf.Post.Media,
-                        pf.Post.NUpvotes
+                        pf.Post.NUpvotes,
+                        pf.Post.fecha_pub
                     }
             // No incluir Cuenta si no lo necesitas
         })
@@ -139,6 +140,123 @@ namespace Api_Post.Controllers
 
             return Ok(postBanda);
         }
+
+        [HttpGet("GetAllLikea")]
+        public async Task<ActionResult<List<object>>> GetAllLikea()
+        {
+            var likeas = await _context.Likea
+                .Select(l => new
+                {
+                    l.IDdePost,
+                    l.IDdeCuenta
+                })
+                .ToListAsync();
+
+            return Ok(likeas);
+        }
+
+        [HttpGet("GetLikeasByPost/{idPost}")]
+        public async Task<IActionResult> GetLikeasByPost(int idPost)
+        {
+            var likeas = await _context.Likea
+                .Where(l => l.IDdePost == idPost)  // Filtrar por el ID de Post
+                .Select(l => new
+                {
+                    l.IDdePost,
+                    l.IDdeCuenta
+                })
+                .ToListAsync();  // Ejecutar la consulta
+
+            // Si no se encuentran resultados, devolver un 404
+            if (likeas == null || !likeas.Any())
+            {
+                return NotFound(new { message = "No se encontraron likes para el post especificado." });
+            }
+
+            return Ok(likeas);  // Retornar los resultados encontrados
+        }
+
+        [HttpPost("CreateLikea")]
+        public async Task<IActionResult> CreateLikea([FromBody] Likea likea)
+        {
+            // Verificar si el Likea ya existe (para evitar duplicados)
+            var existingLikea = await _context.Likea
+                .FirstOrDefaultAsync(l => l.IDdePost == likea.IDdePost && l.IDdeCuenta == likea.IDdeCuenta);
+
+            if (existingLikea != null)
+            {
+                return BadRequest(new { message = "Este Likea ya existe para el Post y Cuenta especificados." });
+            }
+
+            // Obtener el Post asociado al Likea
+            var post = await _context.Post.FindAsync(likea.IDdePost);
+
+            if (post == null)
+            {
+                return NotFound(new { message = "El Post no existe." });
+            }
+
+            // Aumentar el número de upvotes del Post en 1
+            post.NUpvotes += 1;
+
+            // Agregar el nuevo Likea
+            _context.Likea.Add(likea);
+
+            try
+            {
+                // Guardar los cambios tanto en el Likea como en el Post
+                await _context.SaveChangesAsync();
+
+                // Retornar la respuesta con el Likea creado
+                return CreatedAtAction(nameof(GetLikeasByPost), new { idPost = likea.IDdePost }, likea);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al guardar el Likea", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("DeleteLikea")]
+        public async Task<IActionResult> DeleteLikea([FromQuery] int idPost, [FromQuery] int idCuenta)
+        {
+            // Buscar el registro de Likea específico con IDdePost y IDdeCuenta
+            var likea = await _context.Likea
+                .FirstOrDefaultAsync(l => l.IDdePost == idPost && l.IDdeCuenta == idCuenta);
+
+            // Verificar si se encontró el registro Likea
+            if (likea == null)
+            {
+                return NotFound(new { message = "No se encontró el Likea con los valores especificados." });
+            }
+
+            // Obtener el Post asociado
+            var post = await _context.Post.FindAsync(idPost);
+
+            // Verificar si el Post existe
+            if (post == null)
+            {
+                return NotFound(new { message = "El Post no existe." });
+            }
+
+            // Decrementar el número de upvotes del Post en 1
+            post.NUpvotes -= 1;
+
+            // Eliminar el Likea
+            _context.Likea.Remove(likea);
+
+            try
+            {
+                // Guardar los cambios en la base de datos (tanto en Likea como en Post)
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Likea eliminado correctamente, y el número de upvotes ha sido actualizado." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al eliminar el Likea", error = ex.Message });
+            }
+        }
+
+
 
         [HttpGet("GetPost_BandasByBanda/{idBanda}")]
         public async Task<IActionResult> GetPost_BandasByBanda(int idBanda)
