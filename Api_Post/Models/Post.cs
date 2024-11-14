@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api_Post.Models
 {
     public class Post
     {
+        [Key]
         public int ID { get; set; }
+
         public byte[] Media { get; set; }
 
         [StringLength(328)]
@@ -22,6 +22,15 @@ namespace Api_Post.Models
 
         [Required]
         public bool Activo { get; set; } = true;
+
+        [Required]
+        public string discriminator { get; set; }
+
+        // Relaciones con las tablas derivadas
+        public ICollection<Post_Feed> Post_Feeds { get; set; }
+        public ICollection<Post_Evento> PostEventos { get; set; }
+        public ICollection<Post_Banda> PostBandas { get; set; }
     }
+
 
 }

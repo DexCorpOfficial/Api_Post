@@ -26,7 +26,7 @@ namespace Api_Post
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MyDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default")));
-            services.AddControllersWithViews();
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +53,6 @@ namespace Api_Post
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-    
-}
+    }
+
 }
