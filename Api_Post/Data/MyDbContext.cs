@@ -13,7 +13,7 @@ namespace Api_Post.Data
         public DbSet<Post> Post { get; set; }
         public DbSet<Post_Feed> Post_Feed { get; set; }
         public DbSet<Post_Evento> PostEvento { get; set; }
-        public DbSet<Post_Banda> PostBanda { get; set; }
+        public DbSet<Post_Banda> Post_Banda { get; set; }
         public DbSet<Cuenta> Cuenta { get; set; }
         public DbSet<Evento> Eventos { get; set; }
         public DbSet<Banda> Bandas { get; set; }

@@ -120,6 +120,34 @@ namespace Api_Post.Controllers
 
             return Ok(postFeeds);  // Retornar los resultados encontrados
         }
+        [HttpGet("GetPost_BandasByPost/{idPost}")]
+        public async Task<IActionResult> GetPost_BandasByPost(int idPost)
+        {
+            var postBandas = await _context.Post_Banda
+                .Where(pb => pb.IDdePost == idPost)  // Filtrar por el post
+                .Include(pb => pb.Post)              // Incluir la relación con 'Post'
+                .Select(pb => new {
+                    pb.IDdePost,
+                    pb.IDdeBanda,
+                    Post = new
+                    {
+                        pb.Post.ID,
+                        pb.Post.Descripcion,
+                        pb.Post.Media,
+                        pb.Post.NUpvotes,
+                        pb.Post.fecha_pub
+                    }
+                })
+                .ToListAsync();                      // Ejecutar la consulta
+
+            // Si no se encuentran resultados, devolver un 404
+            if (postBandas == null || !postBandas.Any())
+            {
+                return NotFound(new { message = "No se encontraron Post Bandas para el ID de post especificado." });
+            }
+
+            return Ok(postBandas);  // Retornar los resultados encontrados
+        }
 
         [HttpGet("GetAllPost_Banda")]
         public async Task<ActionResult<List<Post>>> GetAllPost_Banda()
@@ -261,7 +289,7 @@ namespace Api_Post.Controllers
         [HttpGet("GetPost_BandasByBanda/{idBanda}")]
         public async Task<IActionResult> GetPost_BandasByBanda(int idBanda)
         {
-            var postBandas = await _context.PostBanda
+            var postBandas = await _context.Post_Banda
                 .Where(pb => pb.IDdeBanda == idBanda)  // Filtrar por la banda
                 .Include(pb => pb.Post)                 // Incluir la relación con 'Post'
                 .Select(pb => new
@@ -406,11 +434,12 @@ namespace Api_Post.Controllers
             };
 
             // 3. Agregar el Post_Banda a la base de datos
-            _context.PostBanda.Add(postBanda);
+            _context.Post_Banda.Add(postBanda);
 
             await _context.SaveChangesAsync();  // Guardar los cambios en Post_Banda
 
-            return Ok(new { message = "Post Banda creado exitosamente", data = newPost });
+            return Ok(new { message = "Post Banda creado exitosamente", data = new { id = newPost.ID } });
+
         }
 
 
