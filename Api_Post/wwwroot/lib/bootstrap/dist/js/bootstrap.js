@@ -1820,7 +1820,7 @@
           flip: {
             enabled: this._config.flip
           },
-          preventOverflow: {
+          prEventoverflow: {
             boundariesElement: this._config.boundary
           }
         } // Disable Popper.js if we have a static display
@@ -2976,7 +2976,7 @@
             arrow: {
               element: Selector$6.ARROW
             },
-            preventOverflow: {
+            prEventoverflow: {
               boundariesElement: this.config.boundary
             }
           },
@@ -3180,10 +3180,10 @@
           });
         } else if (trigger !== Trigger.MANUAL) {
           var eventIn = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSEENTER : _this4.constructor.Event.FOCUSIN;
-          var eventOut = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
+          var Eventout = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
           $(_this4.element).on(eventIn, _this4.config.selector, function (event) {
             return _this4._enter(event);
-          }).on(eventOut, _this4.config.selector, function (event) {
+          }).on(Eventout, _this4.config.selector, function (event) {
             return _this4._leave(event);
           });
         }

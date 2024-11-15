@@ -129,6 +129,7 @@ namespace Api_Post.Controllers
                 .Select(pb => new {
                     pb.IDdePost,
                     pb.IDdeBanda,
+                    pb.IDdeCuenta,
                     Post = new
                     {
                         pb.Post.ID,
@@ -336,11 +337,11 @@ namespace Api_Post.Controllers
             return Ok(postEvento);
         }
 
-        [HttpGet("GetPost_EventosByEvento/{idEvento}")]
-        public async Task<IActionResult> GetPost_EventosByEvento(int idEvento)
+        [HttpGet("GetPost_EventoByEvento/{idEvento}")]
+        public async Task<IActionResult> GetPost_EventoByEvento(int idEvento)
         {
-            var postEventos = await _context.PostEvento
-                .Where(pe => pe.IDdeEvento == idEvento)  // Filtrar por el evento
+            var postEvento = await _context.Post_Evento
+                .Where(pe => pe.IDdeEvento == idEvento)  // Filtrar por el Evento
                 .Include(pe => pe.Post)                   // Incluir la relación con 'Post'
                 .Select(pe => new
                 {
@@ -358,12 +359,12 @@ namespace Api_Post.Controllers
                 .ToListAsync();
 
             // Si no se encuentran resultados, devolver un 404
-            if (postEventos == null || !postEventos.Any())
+            if (postEvento == null || !postEvento.Any())
             {
-                return NotFound(new { message = "No se encontraron Post Eventos para el evento especificado." });
+                return NotFound(new { message = "No se encontraron Post Evento para el Evento especificado." });
             }
 
-            return Ok(postEventos);  // Retornar los resultados encontrados
+            return Ok(postEvento);  // Retornar los resultados encontrados
         }
 
 
@@ -468,12 +469,12 @@ namespace Api_Post.Controllers
             var postEvento = new Post_Evento
             {
                 IDdePost = newPost.ID,  // Asociar con el Post recién creado
-                IDdeEvento = postEventoDTO.IDdeEvento.Value,  // Usar el ID de evento
+                IDdeEvento = postEventoDTO.IDdeEvento.Value,  // Usar el ID de Evento
                 IDdeCuenta = postEventoDTO.IDdeCuenta  // Usar el ID de cuenta
             };
 
             // 3. Agregar el Post_Evento a la base de datos
-            _context.PostEvento.Add(postEvento);
+            _context.Post_Evento.Add(postEvento);
 
             await _context.SaveChangesAsync();  // Guardar los cambios en Post_Evento
 

@@ -3343,7 +3343,7 @@
    * @argument {Object} options - Modifiers configuration and options
    * @returns {Object} The data object, properly modified
    */
-  function preventOverflow(data, options) {
+  function prEventoverflow(data, options) {
     var boundariesElement = options.boundariesElement || getOffsetParent(data.instance.popper);
 
     // If offsetParent is the reference element, we really want to
@@ -3448,13 +3448,13 @@
    * @returns {Object} The data object, properly modified
    */
   function hide(data) {
-    if (!isModifierRequired(data.instance.modifiers, 'hide', 'preventOverflow')) {
+    if (!isModifierRequired(data.instance.modifiers, 'hide', 'prEventoverflow')) {
       return data;
     }
 
     var refRect = data.offsets.reference;
     var bound = find(data.instance.modifiers, function (modifier) {
-      return modifier.name === 'preventOverflow';
+      return modifier.name === 'prEventoverflow';
     }).boundaries;
 
     if (refRect.bottom < bound.top || refRect.left > bound.right || refRect.top > bound.bottom || refRect.right < bound.left) {
@@ -3611,13 +3611,13 @@
      * @memberof modifiers
      * @inner
      */
-    preventOverflow: {
+    prEventoverflow: {
       /** @prop {number} order=300 - Index used to define the order of execution */
       order: 300,
       /** @prop {Boolean} enabled=true - Whether the modifier is enabled or not */
       enabled: true,
       /** @prop {ModifierFn} */
-      fn: preventOverflow,
+      fn: prEventoverflow,
       /**
        * @prop {Array} [priority=['left','right','top','bottom']]
        * Popper will try to prevent overflow following these priorities by default,
@@ -3682,7 +3682,7 @@
      * Modifier used to flip the popper's placement when it starts to overlap its
      * reference element.
      *
-     * Requires the `preventOverflow` modifier before it in order to work.
+     * Requires the `prEventoverflow` modifier before it in order to work.
      *
      * **NOTE:** this modifier will interrupt the current update cycle and will
      * restart it if it detects the need to flip the placement.
@@ -3739,7 +3739,7 @@
      * be used to hide with a CSS selector the popper when its reference is
      * out of boundaries.
      *
-     * Requires the `preventOverflow` modifier before it in order to work.
+     * Requires the `prEventoverflow` modifier before it in order to work.
      * @memberof modifiers
      * @inner
      */
@@ -3855,7 +3855,7 @@
    * ```
    * new Popper(ref, pop, {
    *   modifiers: {
-   *     preventOverflow: { enabled: false }
+   *     prEventoverflow: { enabled: false }
    *   }
    * })
    * ```
@@ -4398,7 +4398,7 @@
           flip: {
             enabled: this._config.flip
           },
-          preventOverflow: {
+          prEventoverflow: {
             boundariesElement: this._config.boundary
           }
         } // Disable Popper.js if we have a static display
@@ -5554,7 +5554,7 @@
             arrow: {
               element: Selector$6.ARROW
             },
-            preventOverflow: {
+            prEventoverflow: {
               boundariesElement: this.config.boundary
             }
           },
@@ -5758,10 +5758,10 @@
           });
         } else if (trigger !== Trigger.MANUAL) {
           var eventIn = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSEENTER : _this4.constructor.Event.FOCUSIN;
-          var eventOut = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
+          var Eventout = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
           $(_this4.element).on(eventIn, _this4.config.selector, function (event) {
             return _this4._enter(event);
-          }).on(eventOut, _this4.config.selector, function (event) {
+          }).on(Eventout, _this4.config.selector, function (event) {
             return _this4._leave(event);
           });
         }

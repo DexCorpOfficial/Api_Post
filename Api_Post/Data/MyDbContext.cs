@@ -12,10 +12,10 @@ namespace Api_Post.Data
         // Definir las tablas para las entidades
         public DbSet<Post> Post { get; set; }
         public DbSet<Post_Feed> Post_Feed { get; set; }
-        public DbSet<Post_Evento> PostEvento { get; set; }
+        public DbSet<Post_Evento> Post_Evento { get; set; }
         public DbSet<Post_Banda> Post_Banda { get; set; }
         public DbSet<Cuenta> Cuenta { get; set; }
-        public DbSet<Evento> Eventos { get; set; }
+        public DbSet<Evento> Evento { get; set; }
         public DbSet<Banda> Bandas { get; set; }
 
         // Agregar el DbSet para la nueva clase 'Likea'
@@ -57,7 +57,7 @@ namespace Api_Post.Data
 
                 // Relación con 'Post'
                 entity.HasOne(pe => pe.Post)
-                    .WithMany(p => p.PostEventos)
+                    .WithMany(p => p.PostEvento)
                     .HasForeignKey(pe => pe.IDdePost)
                     .OnDelete(DeleteBehavior.Cascade);
 
@@ -116,6 +116,12 @@ namespace Api_Post.Data
                     .HasForeignKey(l => l.IDdeCuenta)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<Evento>()
+                .HasOne(e => e.Cuenta)  // Relación con Cuenta
+                .WithMany()              // Sin navegación inversa en Cuenta
+                .HasForeignKey(e => e.IDdeCuenta)  // Definir la clave externa
+                .OnDelete(DeleteBehavior.Cascade);  // Opcional: especificar el comportamiento de eliminación
         }
     }
 }

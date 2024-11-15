@@ -12,13 +12,14 @@ namespace Api_Post.Models
 
         [Required]
         public int IDdeCuenta { get; set; }
+
         public Cuenta Cuenta { get; set; }
 
         [Required]
-        public DateTime FechaIni { get; set; }
+        public DateTime fecha_ini { get; set; }
 
         [Required]
-        public DateTime FechaFin { get; set; }
+        public DateTime fecha_fin { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -30,4 +31,5 @@ namespace Api_Post.Models
         [Required]
         public bool Activo { get; set; } = true;
     }
+
 }

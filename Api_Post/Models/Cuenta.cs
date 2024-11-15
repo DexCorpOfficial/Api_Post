@@ -40,5 +40,7 @@ namespace Api_Post.Models
 
         [Required]
         public bool Activo { get; set; } = true;
+
+        public List<Evento> Eventos { get; set; }
     }
 }

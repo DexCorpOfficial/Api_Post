@@ -28,7 +28,7 @@ namespace Api_Post.Models
 
         // Relaciones con las tablas derivadas
         public ICollection<Post_Feed> Post_Feeds { get; set; }
-        public ICollection<Post_Evento> PostEventos { get; set; }
+        public ICollection<Post_Evento> PostEvento { get; set; }
         public ICollection<Post_Banda> PostBandas { get; set; }
     }
 
