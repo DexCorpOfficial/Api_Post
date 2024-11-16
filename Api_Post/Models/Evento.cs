@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Api_Post.Models
@@ -13,6 +14,7 @@ namespace Api_Post.Models
         [Required]
         public int IDdeCuenta { get; set; }
 
+        [JsonIgnore] 
         public Cuenta Cuenta { get; set; }
 
         [Required]

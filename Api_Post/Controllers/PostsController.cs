@@ -353,7 +353,8 @@ namespace Api_Post.Controllers
                         pe.Post.ID,
                         pe.Post.Descripcion,
                         pe.Post.Media,
-                        pe.Post.NUpvotes
+                        pe.Post.NUpvotes,
+                        pe.Post.fecha_pub
                     }
                 })
                 .ToListAsync();

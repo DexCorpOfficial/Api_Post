@@ -1,6 +1,7 @@
 ﻿using Api_Post.Data;
 using Api_Post.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System;
@@ -28,19 +29,38 @@ namespace Api_Post.Controllers
             return await _context.Evento.ToListAsync();
         }
 
-        // GET: api/Evento/5
+        // GET: Evento/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Evento>> GetById(int id)
         {
-            var Evento = await _context.Evento.FindAsync(id);
-
-            if (Evento == null)
+            try
             {
-                return NotFound();
-            }
+                Console.WriteLine($"Intentando obtener el evento con ID: {id}");
 
-            return Ok(Evento);
+                // Incluir la entidad relacionada 'Cuenta'
+                var evento = await _context.Evento
+                    .Include(e => e.Cuenta)
+                    .FirstOrDefaultAsync(e => e.ID == id);
+
+                if (evento == null)
+                {
+                    Console.WriteLine($"Evento con ID {id} no encontrado.");
+                    return NotFound($"Evento con ID {id} no encontrado.");
+                }
+
+                Console.WriteLine($"Evento obtenido: {evento.Nombre}, cuenta asociada: {evento.Cuenta?.Nombre ?? "No encontrada"}");
+
+                return Ok(evento);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return StatusCode(500, "Error interno del servidor.");
+            }
         }
+
+
 
         [HttpPost("create")]
         public async Task<ActionResult<Evento>> Create([Bind("ID, IDdeCuenta, fecha_ini, fecha_fin, Nombre, Descripcion, Activo")] Evento evento)

@@ -17,9 +17,9 @@ namespace Api_Post.Data
         public DbSet<Cuenta> Cuenta { get; set; }
         public DbSet<Evento> Evento { get; set; }
         public DbSet<Banda> Bandas { get; set; }
-
-        // Agregar el DbSet para la nueva clase 'Likea'
         public DbSet<Likea> Likea { get; set; }
+        public DbSet<Comentario> Comentario { get; set; }  // DbSet de Comentario
+        public DbSet<Responde> Responde { get; set; }  // DbSet de Responde
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -117,11 +117,48 @@ namespace Api_Post.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<Evento>()
-                .HasOne(e => e.Cuenta)  // Relación con Cuenta
-                .WithMany()              // Sin navegación inversa en Cuenta
-                .HasForeignKey(e => e.IDdeCuenta)  // Definir la clave externa
-                .OnDelete(DeleteBehavior.Cascade);  // Opcional: especificar el comportamiento de eliminación
+            // Configuración de la entidad 'Comentario'
+            modelBuilder.Entity<Comentario>(entity =>
+            {
+                entity.HasKey(c => c.ID);  // Clave primaria
+
+                // Relación con 'Post'
+                entity.HasOne(c => c.Post)
+                    .WithMany()  // No hay propiedad de navegación en 'Post' para Comentario
+                    .HasForeignKey(c => c.IDdePost)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación con 'Cuenta'
+                entity.HasOne(c => c.Cuenta)
+                    .WithMany()  // No hay propiedad de navegación en 'Cuenta' para Comentario
+                    .HasForeignKey(c => c.IDdeCuenta)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configuración de la entidad 'Responde' para la relación entre comentarios
+            modelBuilder.Entity<Responde>(entity =>
+            {
+                // Definir la clave primaria compuesta por 'IDdePadre' e 'IDdeHijo'
+                entity.HasKey(r => new { r.IDdePadre, r.IDdeHijo });
+
+                // Relación con 'Comentario' (Padre)
+                entity.HasOne(r => r.Padre)
+                    .WithMany()  // No hay propiedad de navegación en 'Comentario' para Responde
+                    .HasForeignKey(r => r.IDdePadre)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Relación con 'Comentario' (Hijo)
+                entity.HasOne(r => r.Hijo)
+                    .WithMany()  // No hay propiedad de navegación en 'Comentario' para Responde
+                    .HasForeignKey(r => r.IDdeHijo)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Cuenta>()
+                .HasMany(c => c.Eventos)  // Navegación inversa
+                .WithOne(e => e.Cuenta)   // Relación en Evento
+                .HasForeignKey(e => e.IDdeCuenta)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
